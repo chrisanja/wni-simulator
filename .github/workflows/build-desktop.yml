@@ -6,6 +6,9 @@ on:
     tags:
       - 'v*' # Triggers automatically when a version tag like v1.0.0 is pushed
 
+permissions:
+  contents: write
+
 jobs:
   build:
     name: Build on ${{ matrix.os }}
@@ -41,7 +44,7 @@ jobs:
 
       - name: Build Windows Executables (.exe)
         if: matrix.os == 'windows-latest'
-        run: npx electron-builder --win nsis
+        run: npx electron-builder --win nsis --x64
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -54,7 +57,7 @@ jobs:
             dist-electron/*.exe
             dist-electron/*.zip
 
-      - name: Create GitHub Release
+      - name: Create or Update GitHub Release
         if: startsWith(github.ref, 'refs/tags/v')
         uses: softprops/action-gh-release@v2
         with:
